@@ -1,0 +1,248 @@
+import React from "react";
+import { useState } from "react";
+import Title from "../../components/owner/Title";
+import { assets } from "../../assets/assets";
+import { useAppContext } from "../../context/AppContext";
+import { toast } from "react-hot-toast";
+
+const AddCar = () => {
+  const { axios } = useAppContext();
+
+  const [image, setImage] = useState("");
+  const [car, setCar] = useState({
+    brand: "",
+    model: "",
+    year: 0,
+    price_per_day: 0,
+    category: "",
+    transmission: "",
+    fuel_type: "",
+    seating_capacity: 0,
+    location: "",
+    description: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+    if (loading) return null;
+    setLoading(true);
+
+    if (!image) {
+      toast.error("Please upload an image");
+      setLoading(false);
+      return;
+    }
+
+    try {
+      const formData = new FormData();
+      formData.append("image", image);
+      formData.append("carData", JSON.stringify(car));
+      const { data } = await axios.post("/api/owner/add-car", formData);
+      if (data.success) {
+        toast.success(data.message);
+        setImage(null);
+        setCar({
+          brand: "",
+          model: "",
+          year: 0,
+          price_per_day: 0,
+          category: "",
+          transmission: "",
+          fuel_type: "",
+          seating_capacity: 0,
+          location: "",
+          description: "",
+        });
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="px-4 py-10 md:px-10 flex-1">
+      <Title
+        title="Add New Car"
+        subTitle="Fill in details to list a new car for booking, including pricing, availability and car specifications."
+      />
+      <form
+        onSubmit={onSubmitHandler}
+        className="flex flex-col gap-5 text-gray-500 text-sm my-6 max-w-xl"
+      >
+        {/* Car Image */}
+
+        <div className="flex items-center gap-2 w-full">
+          <label htmlFor="car-image">
+            <img
+              src={image ? URL.createObjectURL(image) : assets.upload_icon}
+              alt=""
+              className="h-14 rounded cursor-pointer"
+            />
+            <input
+              type="file"
+              id="car-image"
+              accept="image/*"
+              hidden
+              onChange={(e) => setImage(e.target.files[0])}
+            />
+          </label>
+          <p className="text-sm text-gray-500">Upload car image</p>
+        </div>
+        {/* Car Brand & Model */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="flex flex-col w-full">
+            <label>Car Brand</label>
+            <input
+              type="text"
+              value={car.brand}
+              onChange={(e) => setCar({ ...car, brand: e.target.value })}
+              className="px-4 py-3 mt-1 border border-borderColor rounded-md outline-none"
+              placeholder="e.g. Toyota"
+              required
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label>Model</label>
+            <input
+              type="text"
+              value={car.model}
+              onChange={(e) => setCar({ ...car, model: e.target.value })}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+              placeholder="e.g. Corolla"
+              required
+            />
+          </div>
+        </div>
+        {/* Car Year , Price , Category */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="flex flex-col w-full">
+            <label>Year</label>
+            <input
+              type="number"
+              value={car.year}
+              onChange={(e) => setCar({ ...car, year: e.target.value })}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+              placeholder="e.g. 2025"
+              required
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label>Price Per Day(Rs.)</label>
+            <input
+              type="number"
+              value={car.price_per_day}
+              onChange={(e) =>
+                setCar({ ...car, price_per_day: e.target.value })
+              }
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+              placeholder="e.g. 100"
+              required
+            />
+          </div>
+          <div className="flex flex-col w-full">
+            <label>Category</label>
+            <select
+              onChange={(e) => setCar({ ...car, category: e.target.value })}
+              value={car.category}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+            >
+              <option value="">Select Category</option>
+              <option value="Sedan">Sedan</option>
+              <option value="SUV">SUV</option>
+              <option value="Hatchback">Hatchback</option>
+              <option value="Van">Van</option>
+              <option value="Electric">Electric</option>
+            </select>
+          </div>
+        </div>
+        {/* Car Transmission , Fuel Type , Seating Capacity */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+          <div className="flex flex-col w-full">
+            <label>Transmission</label>
+            <select
+              onChange={(e) => setCar({ ...car, transmission: e.target.value })}
+              value={car.transmission}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+            >
+              <option value="">Select Transmission</option>
+              <option value="Automatic">Automatic</option>
+              <option value="Manual">Manual</option>
+              <option value="Semi-Automatic">Semi-Automatic</option>
+            </select>
+          </div>
+          <div className="flex flex-col w-full">
+            <label>Fuel Type</label>
+            <select
+              onChange={(e) => setCar({ ...car, fuel_type: e.target.value })}
+              value={car.fuel_type}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+            >
+              <option value="">Select Fuel Type</option>
+              <option value="Petrol">Petrol</option>
+              <option value="Diesel">Diesel</option>
+              <option value="Electric">Electric</option>
+              <option value="CNG">CNG</option>
+            </select>
+          </div>
+          <div className="flex flex-col w-full">
+            <label>Seating Capacity</label>
+            <input
+              type="number"
+              value={car.seating_capacity}
+              onChange={(e) =>
+                setCar({ ...car, seating_capacity: e.target.value })
+              }
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+              placeholder="e.g. 5"
+              required
+            />
+          </div>
+        </div>
+        {/* Car Location */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+          <div className="flex flex-col w-full">
+            <label>Location</label>
+            <select
+              onChange={(e) => setCar({ ...car, location: e.target.value })}
+              value={car.location}
+              className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+            >
+              <option value="">Select Location</option>
+              <option value="Hyderabad">Hyderabad</option>
+              <option value="Bangalore">Bangalore</option>
+              <option value="Mumbai">Mumbai</option>
+              <option value="Delhi">Delhi</option>
+            </select>
+          </div>
+        </div>
+        {/* Car Description */}
+        <div className="flex flex-col w-full">
+          <label>Description</label>
+          <textarea
+            rows={5}
+            value={car.description}
+            onChange={(e) => setCar({ ...car, description: e.target.value })}
+            className="px-4 py-3 mt-2 border border-borderColor rounded-md outline-none"
+            placeholder="e.g. A comfortable and spacious car"
+            required
+          ></textarea>
+        </div>
+        <button
+          type="submit"
+          className="bg-black text-white w-max mx-auto px-10 py-3 rounded-md mt-4 hover:bg-secondary transition-all duration-300 cursor-pointer flex items-center gap-2"
+        >
+          <img src={assets.tick_icon} alt="" />
+          {loading ? "Listing Car..." : "List Your Car"}
+        </button>
+      </form>
+    </div>
+  );
+};
+
+export default AddCar;
