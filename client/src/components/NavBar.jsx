@@ -56,7 +56,7 @@ const NavBar = () => {
         items-start sm:items-center gap-4 sm:gap-8 max-sm:p-4 transition-all duration-300 z-50 ${location.pathname === "/" ? "bg-light" : "bg-white"} ${open ? "max-sm:translate-x-0" : "max-sm:translate-x-[100%]"}`}
       >
         {menuLinks.map((link, index) => (
-          <Link key={index} to={link.path}>
+          <Link key={index} to={link.path} onClick={() => setOpen(false)}>
             {link.name}
           </Link>
         ))}
@@ -77,7 +77,10 @@ const NavBar = () => {
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
           <button
-            onClick={() => (isOwner ? navigate("/owner") : changeRole())}
+            onClick={() => {
+              isOwner ? navigate("/owner") : changeRole();
+              setOpen(false);
+            }}
             className="cursor-pointer"
           >
             {isOwner ? "Dashboard" : "List Your Car"}
@@ -85,6 +88,7 @@ const NavBar = () => {
           <button
             onClick={() => {
               user ? logout() : setShowLogin(true);
+              setOpen(false);
             }}
             className="cursor-pointer px-8 py-2 bg-blue-500 text-white hover:bg-blue-600 transition-all duration-300 rounded-lg"
           >
