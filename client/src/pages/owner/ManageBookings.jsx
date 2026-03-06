@@ -2,9 +2,13 @@ import React, { useEffect, useState } from "react";
 import Title from "../../components/owner/Title";
 import { useAppContext } from "../../context/AppContext";
 import { toast } from "react-hot-toast";
+import ChatBox from "../../components/ChatBox";
+
 const ManageBookings = () => {
   const { isOwner, axios } = useAppContext();
   const [bookings, setBookings] = useState([]);
+  const [activeChatBooking, setActiveChatBooking] = useState(null);
+
   const fetchOwnerBookings = async () => {
     try {
       const { data } = await axios.get("/api/bookings/owner");
@@ -55,17 +59,22 @@ const ManageBookings = () => {
             </tr>
           </thead>
           <tbody>
-            {bookings.map((booking, index) => (
-              <tr key={index} className="border-borderColor text-gray-500">
-                <td className="p-3 flex items-center gap-3">
-                  <img
-                    src={booking.car.image}
-                    alt=""
-                    className="w-12 h-12 aspect-square rounded-md object-cover"
-                  />
-                  <p className="font-medium max-md:hidden">
-                    {booking.car.brand} {booking.car.model}
-                  </p>
+            {bookings.map((booking) => (
+              <tr
+                key={booking._id}
+                className="border-borderColor text-gray-500"
+              >
+                <td className="p-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={booking.car.image}
+                      alt=""
+                      className="w-12 h-12 aspect-square rounded-md object-cover"
+                    />
+                    <p className="font-medium max-md:hidden">
+                      {booking.car.brand} {booking.car.model}
+                    </p>
+                  </div>
                 </td>
                 <td className="p-3 max-md:hidden">
                   <p>
@@ -101,12 +110,24 @@ const ManageBookings = () => {
                       {booking.status}
                     </span>
                   )}
+                  <button
+                    onClick={() => setActiveChatBooking(booking)}
+                    className="ml-3 text-xs bg-gray-100 px-3 py-1.5 rounded-md hover:bg-gray-200 transition-colors"
+                  >
+                    Chat
+                  </button>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+      {activeChatBooking && (
+        <ChatBox
+          booking={activeChatBooking}
+          onClose={() => setActiveChatBooking(null)}
+        />
+      )}
     </div>
   );
 };

@@ -4,7 +4,7 @@ import Title from "../../components/owner/Title";
 import { useAppContext } from "../../context/AppContext";
 import { toast } from "react-hot-toast";
 const ManageCars = () => {
-  const { isOwner, axios } = useAppContext();
+  const { isOwner, axios, fetchCars } = useAppContext();
 
   const [cars, setCars] = useState([]);
 
@@ -28,6 +28,7 @@ const ManageCars = () => {
       if (data.success) {
         toast.success(data.message);
         fetchOwnerCars();
+        fetchCars();
       } else {
         toast.error(data.message);
       }
@@ -48,6 +49,7 @@ const ManageCars = () => {
       if (data.success) {
         toast.success(data.message);
         fetchOwnerCars();
+        fetchCars();
       } else {
         toast.error(data.message);
       }
@@ -79,21 +81,23 @@ const ManageCars = () => {
             </tr>
           </thead>
           <tbody>
-            {cars.map((car, index) => (
-              <tr key={index} className="border-t border-borderColor">
-                <td className="p-3 flex items-center gap-3">
-                  <img
-                    src={car.image}
-                    alt=""
-                    className="h-12 w-12 aspect-square rounded-md object-cover"
-                  />
-                  <div className="max-md:hidden">
-                    <p className="font-medium">
-                      {car.brand} {car.model}
-                    </p>
-                    <p className="text-xs text-gray-500">
-                      {car.seating_capacity} . {car.transmission}
-                    </p>
+            {cars.map((car) => (
+              <tr key={car._id} className="border-t border-borderColor">
+                <td className="p-3">
+                  <div className="flex items-center gap-3">
+                    <img
+                      src={car.image}
+                      alt=""
+                      className="h-12 w-12 aspect-square rounded-md object-cover"
+                    />
+                    <div className="max-md:hidden">
+                      <p className="font-medium">
+                        {car.brand} {car.model}
+                      </p>
+                      <p className="text-xs text-gray-500">
+                        {car.seating_capacity} Seats . {car.transmission}
+                      </p>
+                    </div>
                   </div>
                 </td>
                 <td className="p-3 max-md:hidden">{car.category}</td>

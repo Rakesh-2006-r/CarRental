@@ -4,9 +4,13 @@ import { useAppContext } from "../context/AppContext";
 import { assets } from "../assets/assets";
 import { toast } from "react-hot-toast";
 import { motion } from "motion/react";
+import ChatBox from "../components/ChatBox";
+
 const MyBookings = () => {
   const { axios, user } = useAppContext();
   const [bookings, setBookings] = useState([]);
+  const [activeChatBooking, setActiveChatBooking] = useState(null);
+
   const fetchBookings = async () => {
     try {
       const { data } = await axios.get("/api/bookings/user");
@@ -24,7 +28,14 @@ const MyBookings = () => {
     user && fetchBookings();
   }, [user]);
   return (
-    <motion.div initial = {{y: 40, opacity: 0}} animate={{y: 0, opacity: 1}} whileInView={{y: 0, opacity: 1}} viewport={{amount: 0.1, once: true}} transition={{duration: 0.8 , ease: "easeInOut"}} className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl">
+    <motion.div
+      initial={{ y: 40, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      whileInView={{ y: 0, opacity: 1 }}
+      viewport={{ amount: 0.1, once: true }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className="px-6 md:px-16 lg:px-24 xl:px-32 2xl:px-48 mt-16 text-sm max-w-7xl"
+    >
       <Title
         title="My Bookings"
         subTitle="Manage your car rentals and bookings"
@@ -33,7 +44,12 @@ const MyBookings = () => {
       <div className="mt-10">
         {bookings.map((booking, index) => (
           <motion.div
-            initial = {{y: 40, opacity: 0}} animate={{y: 0, opacity: 1}} whileInView={{y: 0, opacity: 1}} viewport={{amount: 0.1, once: true}} transition={{duration: 0.8 , ease: "easeInOut"}} key={booking._id}
+            initial={{ y: 40, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            whileInView={{ y: 0, opacity: 1 }}
+            viewport={{ amount: 0.1, once: true }}
+            transition={{ duration: 0.8, ease: "easeInOut" }}
+            key={booking._id}
             className="grid grid-cols-1 md:grid-cols-4 gap-6 p-6 border border-borderColor rounded-lg mt-6 first:mt-12"
           >
             <div className="md:col-span-1">
@@ -109,10 +125,22 @@ const MyBookings = () => {
                 </h1>
                 <p>Booked on {booking.createdAt.split("T")[0]}</p>
               </div>
+              <button
+                onClick={() => setActiveChatBooking(booking)}
+                className="mt-auto md:w-full bg-black text-white px-4 py-2 rounded text-sm hover:bg-primary transition-all self-end"
+              >
+                Chat with Owner
+              </button>
             </div>
           </motion.div>
         ))}
       </div>
+      {activeChatBooking && (
+        <ChatBox
+          booking={activeChatBooking}
+          onClose={() => setActiveChatBooking(null)}
+        />
+      )}
     </motion.div>
   );
 };
